@@ -41,13 +41,13 @@ terraform-multi-env-project/
 │   ├── main.tf              # EC2, SG, Key Pair (Dev)
 │   ├── variables.tf
 │   ├── backend.tf           # Remote backend config (dev state path)
-│   └── terraform.tfvars
+│   
 │
 ├── prod-env/
 │   ├── main.tf              # EC2, SG, Key Pair (Prod)
 │   ├── variables.tf
 │   ├── backend.tf           # Remote backend config (prod state path)
-│   └── terraform.tfvars
+│   
 │
 ├── .gitignore
 └── README.md
