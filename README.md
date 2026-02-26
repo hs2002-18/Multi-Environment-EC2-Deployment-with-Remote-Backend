@@ -30,13 +30,28 @@ Infrastructure is isolated per environment using separate backend state paths.
 ---
 
 ## 📂 Project Structure
-terraform-project/
+```bash
+terraform-multi-env-project/
 │
-├── remote-backend/ # S3 + DynamoDB backend setup
-├── dev-env/ # Development environment
-├── prod-env/ # Production environment
-└── .gitignore
-
+├── remote-backend/
+│   ├── main.tf              # S3 bucket & DynamoDB table
+│   └── variables.tf
+│
+├── dev-env/
+│   ├── main.tf              # EC2, SG, Key Pair (Dev)
+│   ├── variables.tf
+│   ├── backend.tf           # Remote backend config (dev state path)
+│   └── terraform.tfvars
+│
+├── prod-env/
+│   ├── main.tf              # EC2, SG, Key Pair (Prod)
+│   ├── variables.tf
+│   ├── backend.tf           # Remote backend config (prod state path)
+│   └── terraform.tfvars
+│
+├── .gitignore
+└── README.md
+```
 
 ---
 
