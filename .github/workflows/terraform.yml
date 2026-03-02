@@ -39,6 +39,8 @@ jobs:
       - run: terraform init
    #   - run: terraform fmt -check
       - run: terraform validate
+        
+      - run: terraform plan
         env:
           TF_VAR_public_key: ${{ secrets.PUBLIC_KEY }}
       - run: terraform plan
