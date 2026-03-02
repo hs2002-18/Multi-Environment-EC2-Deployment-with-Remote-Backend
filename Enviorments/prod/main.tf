@@ -10,7 +10,7 @@ public_key = var.public_key
 
 
 module "ec2" {
-  source        = "../../modules/ec2"
+  source        = "../../Module/ec2"
   instance_type = var.instance_type
   key_name      = aws_key_pair.prod_key.key_name
   env           = "prod"
