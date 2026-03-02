@@ -20,7 +20,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Environments/${{ github.event.inputs.environment }}
+        working-directory: Enviorments/${{ github.event.inputs.environment }}
 
     steps:
       - uses: actions/checkout@v4
