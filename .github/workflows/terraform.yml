@@ -43,6 +43,9 @@ jobs:
         env:
           TF_VAR_public_key: ${{ secrets.PUBLIC_KEY }}
         
-      - run: terraform plan
+      - name: Terraform plan
+        run: terraform plan -input=false -lock-timeout = 100s
+        env:
+          TF_VAR_public_key: ${{ secrets.PUBLIC_KEY }}
         
       - run: terraform apply -auto-approve
