@@ -3,7 +3,9 @@ provider "aws" {
 }
 resource "aws_key_pair" "prod_key"{
   key_name = "prod-key"
-  public_key = file("terraform.pub")
+  #  public_key = file("terraform.pub")  --> This is for local
+#For CI we will use the below one and put the contents of key in Github Secret
+public_key = var.public_key
 }
 
 
