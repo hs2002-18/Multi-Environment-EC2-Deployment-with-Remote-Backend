@@ -44,7 +44,7 @@ jobs:
           TF_VAR_public_key: ${{ secrets.PUBLIC_KEY }}
         
       - name: Terraform plan
-        run: terraform plan -input=false -lock-timeout = 100s
+        run: terraform plan -input=false -lock-timeout=100s
         env:
           TF_VAR_public_key: ${{ secrets.PUBLIC_KEY }}
         
