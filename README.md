@@ -5,13 +5,19 @@ This project demonstrates a production-style Infrastructure as Code (IaC) setup 
 ---
 
 ## 🔹 Project Highlights
-
+---
+### Initial Version
 - Multi-environment infrastructure (Dev & Prod)
 - Remote state management using AWS S3
 - State locking with DynamoDB
 - Environment isolation to prevent accidental resource deletion
 - Clean Git workflow with proper `.gitignore`
 - Infrastructure fully reproducible using Terraform
+---
+### Updated Version
+- Converted EC2 Configuration into a reusable module
+- Added CI/CD Pipeine using GitHub Actions
+- Implemented Security Groups
 
 ---
 
