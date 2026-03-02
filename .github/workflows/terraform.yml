@@ -18,9 +18,12 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
+    env:
+      ENVIORMENT: ${{ github.event.inputs.environment || 'dev' }}
+
     defaults:
       run:
-        working-directory: Enviorments/${{ github.event.inputs.environment }}
+        working-directory: Enviorments/${{ env.ENVIORMENT }}
 
     steps:
       - uses: actions/checkout@v4
