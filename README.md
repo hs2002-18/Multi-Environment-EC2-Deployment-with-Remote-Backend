@@ -40,8 +40,9 @@ Infrastructure is isolated per environment using separate backend state paths.
 terraform-multi-env-project/
 │
 ├── remote-backend/
-│   ├── main.tf              # S3 bucket & DynamoDB table
-│   └── variables.tf
+│   ├── s3_backendtf              # S3 bucket & DynamoDB table
+│   ├── variables.tf
+
 │
 ├── dev-env/
 │   ├── main.tf              # EC2, SG, Key Pair (Dev)
