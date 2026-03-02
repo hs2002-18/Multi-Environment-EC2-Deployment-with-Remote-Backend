@@ -23,7 +23,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Enviroments/${{ env.ENVIRONMENT }}
+        working-directory: Enviorments/${{ env.ENVIRONMENT }}
 
     steps:
       - name: Checkout code
