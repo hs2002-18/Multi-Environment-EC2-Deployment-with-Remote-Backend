@@ -40,22 +40,35 @@ Infrastructure is isolated per environment using separate backend state paths.
 terraform-multi-env-project/
 │
 ├── remote-backend/
-│   ├── s3_backendtf              # S3 bucket & DynamoDB table
+│   ├── s3_backend.tf              # S3 bucket 
+│   ├── table_backend.tf          # DynamoDB Table   
 │   ├── variables.tf
-
-│
-├── dev-env/
-│   ├── main.tf              # EC2, SG, Key Pair (Dev)
-│   ├── variables.tf
-│   ├── backend.tf           # Remote backend config (dev state path)
+│   ├── outputs.tf
+│   ├── providers.tf
+|
+|
+├── Module/
+|    ├── ec2/
+│     ├── main.tf           # EC2 instance, SG
+│     ├── variables.tf          
+│     ├── outputs..tf
+│     ├── user-data.sh      # Bash script for installing Nginix
+│    
+├── Enviorments/
+|     ├── dev-env/          # dev path
+│       ├── main.tf              
+│       ├── variables.tf
+│       ├── backend.tf           
+│       ├── terraform.tfvars 
+|
+|     ├── prod-env/          # prod path
+│       ├── main.tf              
+│       ├── variables.tf
+│       ├── backend.tf           
+│       ├── terraform.tfvars 
 │   
-│
-├── prod-env/
-│   ├── main.tf              # EC2, SG, Key Pair (Prod)
-│   ├── variables.tf
-│   ├── backend.tf           # Remote backend config (prod state path)
-│   
-│
+├── .github/workflows
+|      ├── terraform.yml
 ├── .gitignore
 └── README.md
 ```
