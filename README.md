@@ -1,119 +1,144 @@
-# 🚀 Terraform Multi-Environment AWS Infrastructure (Dev & Prod)
+# Terraform Multi-Environment EC2 Deployment with Remote Backend
 
-This project demonstrates a production-style Infrastructure as Code (IaC) setup using Terraform to provision AWS EC2 infrastructure across separate Dev and Prod environments with remote state management.
 
----
+This repository provides a production-grade Infrastructure as Code (IaC) setup using Terraform to provision AWS infrastructure across separate Development (`dev`) and Production (`prod`) environments. It features a remote backend with state locking, a reusable EC2 module, and a CI/CD pipeline using GitHub Actions.
 
-## 🔹 Project Highlights
----
-### Initial Version
-- Multi-environment infrastructure (Dev & Prod)
-- Remote state management using AWS S3
-- State locking with DynamoDB
-- Environment isolation to prevent accidental resource deletion
-- Clean Git workflow with proper `.gitignore`
-- Infrastructure fully reproducible using Terraform
----
-### Updated Version
-- Converted EC2 Configuration into a reusable module
-- Added CI/CD Pipeine using GitHub Actions
-- Implemented Security Groups
+## Core Concepts & Features
 
----
+*   **Multi-Environment Isolation:** Manages `dev` and `prod` environments independently, each with its own state file to prevent cross-environment interference.
+*   **Remote State Management:** Utilizes AWS S3 to store the Terraform state file remotely and AWS DynamoDB for state locking, ensuring consistency and preventing race conditions in team environments.
+*   **Modular Infrastructure:** Employs a reusable Terraform module for EC2 instances, abstracting the configuration for security groups, user data, and instance properties.
+*   **CI/CD Automation:** Includes a GitHub Actions workflow that automates Terraform `init`, `validate`, `plan`, and `apply` for deploying infrastructure.
+*   **Secure Networking:** Provisions AWS Security Groups to control inbound SSH (port 22) and HTTP (port 80) traffic.
 
-## 🏗 What This Project Provisions
+## Project Structure
 
-Each environment deploys:
-
-- Amazon EC2 Instance
-- Security Group
-- EC2 Key Pair
-- Root EBS Volume
-- Environment-based tagging
-
-Infrastructure is isolated per environment using separate backend state paths.
-
----
-
-## 📂 Project Structure
-```bash
-terraform-multi-env-project/
-│
-├── remote-backend/
-│   ├── s3_backend.tf              # S3 bucket 
-│   ├── table_backend.tf          # DynamoDB Table   
-│   ├── variables.tf
-│   ├── outputs.tf
-│   ├── providers.tf
-|
-|
-├── Module/
-|    ├── ec2/
-│     ├── main.tf           # EC2 instance, SG
-│     ├── variables.tf          
-│     ├── outputs..tf
-│     ├── user-data.sh      # Bash script for installing Nginix
-│    
+```
+.
+├── .github/
+│   └── workflows/
+│       └── terraform.yml       # CI/CD pipeline for automated deployment
 ├── Enviorments/
-|     ├── dev-env/          # dev path
-│       ├── main.tf              
-│       ├── variables.tf
-│       ├── backend.tf           
-│       ├── terraform.tfvars 
-|
-|     ├── prod-env/          # prod path
-│       ├── main.tf              
-│       ├── variables.tf
-│       ├── backend.tf           
-│       ├── terraform.tfvars 
-│   
-├── .github/workflows
-|      ├── terraform.yml
-├── .gitignore
+│   ├── dev/                    # Development environment configuration
+│   │   ├── backend.tf
+│   │   ├── main.tf
+│   │   ├── terraform.tfvars
+│   │   └── variables.tf
+│   └── prod/                   # Production environment configuration
+│       ├── backend.tf
+│       ├── main.tf
+│       ├── terraform.tfvars
+│       └── variables.tf
+├── Module/
+│   └── ec2/                    # Reusable EC2 module
+│       ├── main.tf             # Defines EC2 instance and security group
+│       ├── outputs.tf
+│       ├── user-data.sh        # Installs Nginx on instance launch
+│       └── variables.tf
+├── remote-backend/             # Configuration for the Terraform backend
+│   ├── s3_backend.tf           # Defines the S3 bucket
+│   ├── table_backend.tf        # Defines the DynamoDB table for state locking
+│   └── ...
 └── README.md
 ```
 
----
+## How It Works
 
-## 🔐 Remote Backend Architecture
+### Remote Backend
 
-- **Amazon S3** → Remote Terraform state storage  
-- **DynamoDB** → State locking to prevent concurrent modifications  
+The foundation of this setup is the remote backend, configured in the `remote-backend` directory.
+*   **AWS S3 Bucket (`s3_backend.tf`):** Stores the `terraform.tfstate` files. Versioning is enabled on the bucket to recover from accidental deletions or state corruption.
+*   **AWS DynamoDB Table (`table_backend.tf`):** Provides a state locking mechanism. When a `terraform apply` is running, a lock is placed in this table, preventing others from running concurrent operations that could corrupt the state.
 
-This setup simulates real-world DevOps infrastructure management practices.
+### Environments (`dev` & `prod`)
 
----
+The `Enviorments` directory contains separate subdirectories for each environment. This isolation is achieved through the `backend.tf` file in each directory, which specifies a unique `key` for the state file in the S3 bucket:
 
-## 🛠 Technologies Used
+*   **Dev:** `key = "dev/terraform.tf"`
+*   **Prod:** `key = "prod/terraform.tf"`
 
-- Terraform
-- AWS EC2
-- AWS S3
-- AWS DynamoDB
-- Git & GitHub
+This ensures that applying changes in the `dev` environment will never affect `prod` resources.
 
----
+### EC2 Module
 
-## 🎯 Key Concepts Demonstrated
+The `Module/ec2` directory contains a reusable module that provisions:
+*   An `aws_instance` (EC2).
+*   An `aws_security_group` that allows HTTP and SSH access.
+*   A `user-data.sh` script that runs on first boot to update the instance and install an Nginx web server.
 
-- Infrastructure as Code (IaC)
-- State management & locking
-- Environment isolation
-- Backend configuration
-- Resource lifecycle management
-- Git best practices for Terraform projects
+## Getting Started
 
----
+### Prerequisites
 
-## 📌 Future Enhancements
+*   AWS Account
+*   Configured AWS CLI with an IAM user having necessary permissions.
+*   Terraform installed locally.
+*   An SSH key pair. If you don't have one, create it with `ssh-keygen -t rsa -b 4096`.
 
-- Convert EC2 configuration into reusable Terraform modules
-- Add CI/CD pipeline using GitHub Actions
-- Implement VPC module
-- Add monitoring and scaling
+### Step 1: Set Up the Remote Backend
 
----
+First, deploy the S3 bucket and DynamoDB table that will manage your Terraform state.
 
-## 👨‍💻 Author
-Harsh  
+```sh
+# Navigate to the remote backend directory
+cd remote-backend
 
+# Initialize Terraform
+terraform init
+
+# Apply the configuration to create the S3 bucket and DynamoDB table
+terraform apply
+```
+
+### Step 2: Deploy an Environment
+
+You can now deploy either the `dev` or `prod` environment. The steps are the same for both.
+
+1.  **Navigate to the environment directory:**
+    ```sh
+    cd Enviorments/dev
+    ```
+
+2.  **Initialize Terraform:** This will connect to the remote backend you created in the previous step.
+    ```sh
+    terraform init
+    ```
+
+3.  **Plan and Apply:** Run `plan` to preview the changes and `apply` to create the resources. You will need to pass your public SSH key as a variable.
+
+    ```sh
+    # Plan the deployment
+    terraform plan -var="public_key=$(cat ~/.ssh/id_rsa.pub)"
+
+    # Apply the deployment
+    terraform apply -var="public_key=$(cat ~/.ssh/id_rsa.pub)" -auto-approve
+    ```
+    Replace `~/.ssh/id_rsa.pub` with the path to your public SSH key. Upon completion, Terraform will output the public IP of the new EC2 instance.
+
+## CI/CD Automation
+
+This repository includes a GitHub Actions workflow defined in `.github/workflows/terraform.yml` to automate deployments.
+
+### Workflow Triggers
+
+*   **Manual Trigger (`workflow_dispatch`):** You can manually run the workflow from the "Actions" tab in GitHub and choose to deploy either the `dev` or `prod` environment.
+*   **Push to `master`:** A push to the `master` branch will automatically trigger a deployment to the `dev` environment.
+
+### Required GitHub Secrets
+
+To enable the CI/CD pipeline, you must configure the following secrets in your GitHub repository settings (**Settings > Secrets and variables > Actions**):
+
+*   `AWS_ACCESS_KEY`: Your AWS access key ID.
+*   `AWS_SECRET_KEY`: Your AWS secret access key.
+*   `PUBLIC_KEY`: The content of your public SSH key file (`id_rsa.pub`).
+
+## Technologies Used
+
+*   Terraform
+*   AWS (EC2, S3, DynamoDB)
+*   GitHub Actions
+*   Shell Scripting (user data)
+
+## Author
+
+*   Harsh
